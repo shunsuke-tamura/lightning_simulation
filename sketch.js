@@ -66,6 +66,7 @@ class Maze {
     rect(50, 50, 500, 500)
     for (const cell of this.cells) {
       cell.drawWalls()
+      cell.start === 1 && cell.fillCell([255, 255, 255])
     }
   }
 }
@@ -87,7 +88,6 @@ class Cell {
     this.rightWall === 1 && line(this.position[0] + this.size, this.position[1], this.position[0] + this.size, this.position[1] + this.size)
     this.bottomWall === 1 && line(this.position[0], this.position[1] + this.size, this.position[0] + this.size, this.position[1] + this.size)
     this.leftWall === 1 && line(this.position[0], this.position[1], this.position[0], this.position[1] + this.size)
-    this.start === 1 && this.fillCell([255, 255, 255])
   }
 
   fillCell(color) {

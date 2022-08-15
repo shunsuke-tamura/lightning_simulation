@@ -21,7 +21,9 @@ class Maze {
     this.increase = 500 / lineNum
     this.lineNum = lineNum
     this.cells = Array.from(Array(lineNum * lineNum)).map((_, i) => 
-      new Cell(i, this.increase, 50 + (i % lineNum) * this.increase, 50 + Math.floor(i / lineNum) * this.increase)
+      i === Math.ceil(lineNum / 2)
+        ? new Cell(i, this.increase, 50 + (i % lineNum) * this.increase, 50 + Math.floor(i / lineNum) * this.increase, 1)
+        : new Cell(i, this.increase, 50 + (i % lineNum) * this.increase, 50 + Math.floor(i / lineNum) * this.increase, 0)
     )
   }
 
@@ -66,7 +68,7 @@ class Maze {
 }
 
 class Cell {
-  constructor(id, size, positionX, positionY) {
+  constructor(id, size, positionX, positionY, start) {
     this.id = id
     this.size = size
     this.position = [positionX, positionY]
@@ -74,6 +76,7 @@ class Cell {
     this.rightWall = 0;
     this.bottomWall = 0;
     this.leftWall = 0;
+    this.start = start;
   }
 
   drawWalls() {
@@ -81,5 +84,13 @@ class Cell {
     this.rightWall === 1 && line(this.position[0] + this.size, this.position[1], this.position[0] + this.size, this.position[1] + this.size)
     this.bottomWall === 1 && line(this.position[0], this.position[1] + this.size, this.position[0] + this.size, this.position[1] + this.size)
     this.leftWall === 1 && line(this.position[0], this.position[1], this.position[0], this.position[1] + this.size)
+    this.start === 1 && this.fillCell([0, 0, 0])
+  }
+
+  fillCell(color) {
+    noStroke()
+    fill(color)
+    rect(this.position[0], this.position[1], this.size, this.size);
+    stroke(0, 0, 0)
   }
 }

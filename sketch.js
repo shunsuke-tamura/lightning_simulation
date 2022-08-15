@@ -23,7 +23,7 @@ class Maze {
     this.increase = 500 / lineNum
     this.lineNum = lineNum
     this.cells = Array.from(Array(lineNum * lineNum)).map((_, i) =>
-      i === Math.ceil(lineNum / 2)
+      i === Math.floor(lineNum / 2)
         ? new Cell(i, this.increase, 50 + (i % lineNum) * this.increase, 50 + Math.floor(i / lineNum) * this.increase, 1)
         : new Cell(i, this.increase, 50 + (i % lineNum) * this.increase, 50 + Math.floor(i / lineNum) * this.increase, 0)
     )
@@ -69,6 +69,49 @@ class Maze {
       cell.start === 1 && cell.fillCell([255, 255, 255])
     }
   }
+
+  // 幅有線探索
+  BFS() {
+    let currentCell, nextCell, currentStep = 0
+    let tempCells = [...this.cells]
+    let queue = [tempCells.splice(Math.floor(this.lineNum / 2), 1, undefined)]
+    this.cells[Math.floor(this.lineNum / 2)].step = 0
+    while (queue.length !== 0) {
+      currentStep++
+      currentCell = queue.shift()
+      if ((this.lineNum - 1) * this.lineNum <= currentCell.id || currentCell.id <= this.lineNum * this.lineNum - 1) {
+        break
+      } 
+      if (currentCell.topWall === 0) {
+        nextCell = tempCells.splice(Math.floor(currentCell.id / this.lineNum - 1) * this.lineNum + currentCell.id % this.lineNum, 1, undefined)
+        if (nextCell) {
+          queue.push(nextCell)
+          this.cells[currentCell.id].step = currentStep
+        }
+      }
+      if (currentCell.rightWall === 0) {
+        nextCell = tempCells.splice(currentCell.id + 1, 1, undefined)
+        if (nextCell) {
+          queue.push(nextCell)
+          this.cells[currentCell.id].step = currentStep
+        }
+      }
+      if (currentCell.bottomWall === 0) {
+        nextCell = tempCells.splice(Math.floor(currentCell.id / this.lineNum + 1) * this.lineNum + currentCell.id % this.lineNum, 1, undefined)
+        if (nextCell) {
+          queue.push(nextCell)
+          this.cells[currentCell.id].step = currentStep
+        }
+      }
+      if (currentCell.leftWall === 0) {
+        nextCell = tempCells.splice(currentCell.id - 1, 1, undefined)
+        if (nextCell) {
+          queue.push(nextCell)
+          this.cells[currentCell.id].step = currentStep
+        }
+      }
+    }
+  }
 }
 
 class Cell {
@@ -81,6 +124,7 @@ class Cell {
     this.bottomWall = 0;
     this.leftWall = 0;
     this.start = start;
+    this.step = -1;
   }
 
   drawWalls() {

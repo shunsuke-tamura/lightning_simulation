@@ -6,7 +6,6 @@ function setup() {
   background(31, 127, 255)
   stroke(255, 255, 255)
   fill(0, 0, 0)
-  rect(50, 50, 500, 500)
 }
 
 function draw() {
@@ -56,14 +55,23 @@ class Maze {
         }
       }
     }
+
+    // 四方の枠を設定
+    for (let i = 0; i < this.lineNum; i ++) { 
+      // 上
+      this.cells[i].topWall = 1
+      // 右
+      this.cells[(i + 1) * this.lineNum - 1].rightWall = 1
+      // 下
+      this.cells[(this.lineNum - 1) * this.lineNum + i].bottomWall = 1
+      // 左
+      this.cells[i * this.lineNum].leftWall = 1
+    }
   }
 
   drawMaze() {
     clear()
-    createCanvas(600, 600)
-    background(31, 127, 255)
-    fill(0, 0, 0)
-    rect(50, 50, 500, 500)
+    setup()
     for (const cell of this.cells) {
       cell.drawWalls()
       cell.start === 1 && cell.fillCell([255, 255, 255])

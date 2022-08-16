@@ -12,6 +12,7 @@ function draw() {
   if (flame % 120 === 0 && flame / 120 < 5) {
     maze = new Maze((flame / 120 + 1) * 10)
     maze.generateMaze()
+    maze.BFS()
     maze.drawMaze()
   }
   flame += 1
@@ -74,49 +75,55 @@ class Maze {
     setup()
     for (const cell of this.cells) {
       cell.drawWalls()
-      cell.start === 1 && cell.fillCell([255, 255, 255])
+      cell.fillCell([255, 255, 255 , cell.step + 1])
+      cell.start === 1 && cell.fillCell([255, 255, 255 , 255])
     }
   }
 
   // 幅有線探索
   BFS() {
-    let currentCell, nextCell, currentStep = 0
     let tempCells = [...this.cells]
-    let queue = [tempCells.splice(Math.floor(this.lineNum / 2), 1, undefined)]
+    let currentCell = tempCells.splice(Math.floor(this.lineNum / 2), 1, null), nextCell, currentStep = 0
+    let queue = [currentCell[0]]
     this.cells[Math.floor(this.lineNum / 2)].step = 0
     while (queue.length !== 0) {
       currentStep++
+      console.log("queue:", queue);
       currentCell = queue.shift()
-      if ((this.lineNum - 1) * this.lineNum <= currentCell.id || currentCell.id <= this.lineNum * this.lineNum - 1) {
-        break
-      } 
       if (currentCell.topWall === 0) {
-        nextCell = tempCells.splice(Math.floor(currentCell.id / this.lineNum - 1) * this.lineNum + currentCell.id % this.lineNum, 1, undefined)
-        if (nextCell) {
-          queue.push(nextCell)
+        nextCell = tempCells.splice(Math.floor(currentCell.id / this.lineNum - 1) * this.lineNum + currentCell.id % this.lineNum, 1, null)
+        if (nextCell[0]) {
+          console.log(nextCell);
+          queue.push(nextCell[0])
           this.cells[currentCell.id].step = currentStep
         }
       }
       if (currentCell.rightWall === 0) {
-        nextCell = tempCells.splice(currentCell.id + 1, 1, undefined)
-        if (nextCell) {
-          queue.push(nextCell)
+        nextCell = tempCells.splice(currentCell.id + 1, 1, null)
+        if (nextCell[0]) {
+          console.log(nextCell);
+          queue.push(nextCell[0])
           this.cells[currentCell.id].step = currentStep
         }
       }
       if (currentCell.bottomWall === 0) {
-        nextCell = tempCells.splice(Math.floor(currentCell.id / this.lineNum + 1) * this.lineNum + currentCell.id % this.lineNum, 1, undefined)
-        if (nextCell) {
-          queue.push(nextCell)
+        nextCell = tempCells.splice(Math.floor(currentCell.id / this.lineNum + 1) * this.lineNum + currentCell.id % this.lineNum, 1, null)
+        if (nextCell[0]) {
+          console.log(nextCell);
+          queue.push(nextCell[0])
           this.cells[currentCell.id].step = currentStep
         }
       }
       if (currentCell.leftWall === 0) {
-        nextCell = tempCells.splice(currentCell.id - 1, 1, undefined)
-        if (nextCell) {
-          queue.push(nextCell)
+        nextCell = tempCells.splice(currentCell.id - 1, 1, null)
+        if (nextCell[0]) {
+          console.log(nextCell);
+          queue.push(nextCell[0])
           this.cells[currentCell.id].step = currentStep
         }
+      }
+      if ((this.lineNum - 1) * this.lineNum <= currentCell.id && currentCell.id <= this.lineNum * this.lineNum - 1) {
+        break
       }
     }
   }
